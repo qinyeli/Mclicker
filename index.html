@@ -20,19 +20,24 @@
 
 		 		var Timer = React.createClass({
 		 			getInitialState: function(){
-		 				return {time: {this.props.init}};
+		 				return {time: 20};
 		 			},
 		 			timeDecrease: function(){
-		 				this.setState({time: ({this.state.time}-1)});
+		 				var current_time = this.state.time-1;
+		 				//console.log(current_time);
+		 				if (current_time!=-1)
+		 				{
+		 					this.setState({time: current_time});
+		 				}
 		 			},
 		 			handleClick: function(){
-		 				setInterval({this.timeDecrease},1000);
-		 			}
-		 			,
+		 				//console.log("Handling click");
+		 				setInterval(this.timeDecrease,1000);
+		 			},
 		 			render: function(){
 		 				return(
 		 					<div>
-			 					<button onclick={this.handleClick}>Start</button>
+			 					<button onClick={this.handleClick}>Start</button>
 			 					<Clock time={this.state.time}/>
 			 				</div>
 		 				);
