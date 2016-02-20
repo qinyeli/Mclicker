@@ -1,4 +1,12 @@
+var wrapper = React.createClass({
+	render: function(){
+		return (
+			<h1>This is heading</h1>
+		)
+	}
+})
+
 ReactDOM.render(
-  <h1>Hello, world!</h1>,
+  <Wrapper/>,
   document.getElementById('content')
 );
