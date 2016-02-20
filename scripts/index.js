@@ -1,4 +1,4 @@
-var wrapper = React.createClass({
+var Wrapper = React.createClass({
 	render: function(){
 		return (
 			<h1>This is heading</h1>
