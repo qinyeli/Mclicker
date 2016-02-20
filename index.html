@@ -37,18 +37,27 @@
 		 			render: function(){
 		 				return(
 		 					<div>
-			 					<button onClick={this.handleClick}>Start</button>
+			 					<button onClick={this.handleClick} className="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Start</button>
 			 					<Clock time={this.state.time}/>
 			 				</div>
 		 				);
 		 			}
 		 		});
 
+		 		var Stop = React.createClass({
+		 			render: function (){
+		 				return (
+		 					<button className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Stop</button>
+		 				)
+		 			}
+		 		})
+
 				var Wrapper = React.createClass({
 					render: function(){
 						return (
 							<div>
-								<Timer init="20"/>
+								<Timer/>
+								<Stop/>
 							</div>
 						)
 					}
