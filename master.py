@@ -45,8 +45,9 @@ class master:
 		for message in self.client.messages.list():
 			self.client.messages.delete(message.sid)
 		seed()	
-		self.auth = str(randint(100000, 999999))
-		return json.dumps(self.auth)
+		num = randint(100000, 999999)
+		self.auth = str(num)
+		return json.dumps(num)
 
 #when front-end finish twenty seconds count, this will be called, and collect all students who submitted the correct authentication code
 	def checkAuth(self):
@@ -65,7 +66,7 @@ class master:
 		return json.dumps(len(self.grades))
 
 #fetch all answers and write to a csv file called grades.csv
-	def getAnswer(self):
+	def getAnswerCount(self):
 		self.countSubmission()
 		with open('grades.csv', 'w') as csvfile:
 			fieldnames = ["student", "answer"]
@@ -88,6 +89,9 @@ class master:
 			else:
 				countAnswer[answer[1]] = 1
 		return json.dumps(countAnswer)
+	
+	def getGradeStats(self):
+		return json.dumps(self.grades)
 
 m = master()
 
@@ -95,21 +99,25 @@ m = master()
 def start():
 	return render_template('index.html')
 	
-@app.route('/generate')
+@app.route('/generate',methods=['POST'])
 def generate():
-	m.generateAuthCode() 
+	return m.generateAuthCode() 
 
-@app.route('/check')
+@app.route('/check', methods=['POST']) #20 seconds later call this
 def check():
 	m.checkAuth()
 
-@app.route('/count')
+@app.route('/count', methods=['POST']) #Number of submission
 def count():
-	m.countSubmission()
+	return m.countSubmission()
 
-@app.route('/stop')
+@app.route('/stop',methods=['POST']) #Call when Stop. Note to console.log
 def stop():
-	m.getAnswer()
+	return m.getAnswer()
+
+@app.route('/stat', methods=['POST'])
+def stat():
+	return m.getGradeStats()
 
 
 if __name__ == "__main__":
