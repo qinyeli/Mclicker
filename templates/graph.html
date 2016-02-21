@@ -3,6 +3,9 @@
 	<head>
 		<title>Mclicker graph</title>
 		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+		<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/eldarion-ajax/0.12.0/eldarion-ajax.min.js"></script>
 	</head>
 	<body>
 		 <div id="chart_div"></div>
@@ -23,6 +26,7 @@
 			google.charts.setOnLoadCallback(draw);
 
 			function draw() {
+						console.log("draw")
 						var data = new google.visualization.DataTable();
 						data.addColumn('string', 'Answer');
 						data.addColumn('number', 'Student Number')
@@ -32,7 +36,7 @@
 						var options = {
 						  title: 'Statistic of Your Answer',
 							width: 5,
-              height: 10
+						        height: 10
 						  };
 
 						var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));

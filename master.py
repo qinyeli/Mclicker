@@ -40,7 +40,10 @@ class master:
 		self.client = TwilioRestClient(self.account, self.token)
 		for message in self.client.messages.list():
 			self.client.messages.delete(message.sid)
+		self.timeUp1 = 0
+		self.timeUp2 = 0
 		self.grades = {}
+		self.presentStudent = {}
 
 #generate a random authentication code
 	def generateAuthCode(self, mySeed=0):
@@ -51,11 +54,7 @@ class master:
 
 #when front-end finish twenty seconds count, this will be called, and collect all students who submitted the correct authentication code
 	def checkAuth(self):
-		self.presentStudent = {}
-		for message in self.client.messages.list(to = self.number):
-			if message.body == self.auth:
-				self.presentStudent[str(message.from_)] = 1
-				self.client.messages.delete(message.sid)
+		self.timeUp = 1
 		print self.presentStudent
 		return json.dumps(0)
 
@@ -118,6 +117,7 @@ def stat():
 
 @app.route('/graph', methods=['POST'])
 def graph():
+	print "before render"
 	return render_template('graph.html')
 
 @app.route('/img/sunset.jpg', methods=['GET'])
@@ -128,14 +128,20 @@ def get_image_sunset():
 @app.route('/recv_submission', methods = ['POST'])
 def recv_submission():
 	from_ = request.form['From']
-	sid = request.form['Sid']
+	sid = request.form['SmsMessageSid']
 	body = request.form['Body']
-	m.grades[from_] = body
-	m.client.messages.delete(message.sid)
+	if body == m.auth and m.timeUp1 == 0:
+		m.presentStudent[from_] = 1
+		print "auth:" + from_
+	else:
+		if m.timeUp2 == 0:
+			m.grades[from_] = body
+			print "ans:" + from_ + body
+	return '0'
 
 
 if __name__ == "__main__":
-	app.run(threaded=True)
+	app.run(debug=True)
 
 #for test
 #client = master()
