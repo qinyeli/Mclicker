@@ -83,6 +83,9 @@ class master:
 			for student in self.presentStudent.items():
 				self.grades[student[0]] = "present but no answer"
 				writer.writerow({"student": student[0], "answer": "present but no answer"})
+		return json.dumps(self.grades)
+	
+	def getGradeStats(self):
 		countAnswer = {}
 		for answer in self.grades.items():
 			if answer[1] in countAnswer:
@@ -90,9 +93,6 @@ class master:
 			else:
 				countAnswer[answer[1]] = 1
 		return json.dumps(countAnswer)
-	
-	def getGradeStats(self):
-		return json.dumps(self.grades)
 
 m = master()
 
