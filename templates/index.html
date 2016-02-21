@@ -124,9 +124,6 @@
 		 					setInterval(this.timeDecrease,1000);
 		 				}
 		 			},
-		 			componentDidMount: function(){
-		 				socket.emit('export');
-		 			},
 		 			render: function(){
 		 				return(
 		 					<div>
@@ -144,21 +141,21 @@
 							url: '/stop',
 							type: 'POST',
 							success: function(response){
-								console.log(response);
+								var obj = JSON.parse(response);
+								var phones = Object.keys(obj);
+								for (var i = 0; i < phones.length; i++) {
+									var score = 1;
+									if (obj[phones[i]] == 'd' || obj[phones[i]] == 'D') {
+										score++;
+									}
+									console.log(phones[i] + ' ' + score);
+									socket.emit('update', {"phone": phones[i], "score": score});
+								}
 							},
 							error: function(error){
 								console.log(error);
 							}
-						});
-						$.ajax({
-							url: '/graph',
-							type: 'POST',
-							success: function(){
-							},
-							error: function(error){
-								console.log(error);
-							}
-						});								 				 
+						});							 				 
 		 			},
 		 			render: function(){
 		 				return (
@@ -224,6 +221,8 @@
 					google.charts.setOnLoadCallback(draw);
 
 					function draw() {
+						socket.emit('export');
+
 						var data = new google.visualization.DataTable();
 						data.addColumn('string', 'Answer');
 						data.addColumn('number', 'Student Number');
