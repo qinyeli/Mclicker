@@ -38,12 +38,12 @@ class master:
 		self.token = tkn
 		self.number = nmb
 		self.client = TwilioRestClient(self.account, self.token)
+		for message in self.client.messages.list():
+			self.client.messages.delete(message.sid)
 		self.grades = {}
 
 #generate a random authentication code
 	def generateAuthCode(self, mySeed=0):
-		for message in self.client.messages.list():
-			self.client.messages.delete(message.sid)
 		seed()	
 		num = randint(100000, 999999)
 		self.auth = str(num)
