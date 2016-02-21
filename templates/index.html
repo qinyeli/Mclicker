@@ -11,10 +11,12 @@
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/eldarion-ajax/0.12.0/eldarion-ajax.min.js"></script>
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 	</head>
 	<body>
 		<div id="content"></div>
 		 	<script type="text/babel">
+		 		var socket = io('http://127.0.0.1:3000');
 
 				var problems = [
 					{
@@ -117,6 +119,9 @@
 		 					this.setState({pushed: true});
 		 					setInterval(this.timeDecrease,1000);
 		 				}
+		 			},
+		 			componentDidMount: function(){
+		 				socket.emit('export');
 		 			},
 		 			render: function(){
 		 				return(

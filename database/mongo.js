@@ -6,6 +6,9 @@ var fs = require("fs");
 var inputFileName = "data.csv";
 var outputFileName = "output.csv";
 
+var server = require('http').createServer();
+var io = require('socket.io').listen(server);
+
 //intialize database
 var initialDB = function(callback) {
   var nameList = [];
@@ -105,14 +108,14 @@ var clearScore = function(callback) {
 };
 
 //update student name
-var updateScore = function(phone, score, callback) {
+var updateScore = function(data, callback) {
   MongoClient.connect(url, function(err, db) {
     if (err) {
       //console.log("Mongo connect error");
     }
     db.collection('studentInfo').updateOne(
-      {"phone": phone},
-      {$push: {"score": score}},
+      {"phone": data.phone},
+      {$push: {"score": data.score}},
       function(err, results) {
         db.close();
     });
@@ -150,19 +153,31 @@ var exportResults = function(callback) {
   });
 };
 
-var test = function() {
-  for (var i = 0; i < 5; i++) {
-    findStudent("110");
-    updateScore("110", 2);
-    console.log("loop");
-  }
-}
+io.sockets.on('connect', function(socket) {
+  initialDB();
+  console.log("server connected");
+
+  socket.on('update', function(data) {
+    updateScore(data);
+  });
+  
+  socket.on('export', function() {
+    console.log('export');
+    exportResults();
+  });
+
+  socket.on('disconnect', function() {
+    clearScore();
+  });
+});
+
+server.listen(3000, '127.0.0.1');
 
 //functions to call
-initialDB();
+/*initialDB();
 clearScore();
 findStudent("110");
 updateScore("110", 2);
 showStudents();
 exportResults();
-test();
+test();*/
