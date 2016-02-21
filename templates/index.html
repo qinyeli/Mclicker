@@ -75,7 +75,7 @@
 
 		 		var Timer = React.createClass({
 		 			getInitialState: function(){
-		 				return {time: 20, pushed: false, recaptcha: ""};
+		 				return {time: 20, pushed: false, recaptcha: "", checked: false};
 		 			},
 		 			timeDecrease: function(){
 		 				var current_time = this.state.time-1;
@@ -83,7 +83,7 @@
 		 				{
 		 					this.setState({time: current_time});
 		 				}
-						else if (current_time==-1)
+						else if (!checked)
 						{
 							$.ajax({
 								url: '/check',
@@ -94,6 +94,7 @@
 									console.log(error);
 								}
 							});
+							checked=true;
 						}
 		 			},
 		 			handleClick: function(){
