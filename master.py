@@ -114,7 +114,7 @@ def count():
 
 @app.route('/stop',methods=['POST']) #Call when Stop. Note to console.log
 def stop():
-	return m.getAnswer()
+	return m.getAnswerCount()
 
 @app.route('/stat', methods=['POST'])
 def stat():
