@@ -17,9 +17,9 @@ var initialDB = function(callback) {
 
           fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
             var data = buffer.toString("utf8", 0, buffer.length);
-            var rows = data.split('\n');
+            var rows = data.split(/\r\n|\n|\r/);
             for (var i = 0; i < rows.length; i++) {
-              var col = rows[i].split(', ');
+              var col = rows[i].split(',');
               nameList.push({"name":col[0], "phone":col[1], "scores":[]});
             }
             fs.close(fd);
@@ -30,18 +30,18 @@ var initialDB = function(callback) {
   });
   MongoClient.connect(url, function(err, db) {
     if (err) {
-      console.log("Mongo connect error");
+      //console.log("Mongo connect error");
     }
     //remove previous database
     db.collection('studentInfo').deleteMany({}, function(err, results){
       if (err) {
-        console.log("Mongo delete error");
+        //console.log("Mongo delete error");
       }
     });
     //insert name list
     db.collection('studentInfo').insertMany(nameList, function(err, result) {
       if (err) {
-        console.log("Mongo insert error");
+        //console.log("Mongo insert error");
       }
       db.close();
     });
@@ -52,15 +52,19 @@ var initialDB = function(callback) {
 var showStudents = function(callback) {
   MongoClient.connect(url, function(err, db) {
     if (err) {
-      console.log("Mongo connect error");
+      //console.log("Mongo connect error");
     }
     var cursor = db.collection('studentInfo').find();
     cursor.each(function(err, doc) {
       if (err) {
-        console.log("Mongo find error");
+        //console.log("Mongo find error");
       }
       if (doc != null) {
-        console.log(doc["name"] + ' ' + doc["phone"] + ' ' + doc["score"]);
+        var scoreString = "";
+        if (doc["score"]) {
+          scoreString = doc["score"].toString();
+        }
+        //console.log(doc["name"] + ' ' + doc["phone"] + ' ' + scoreString);
       } else {
         db.close();
       }
@@ -72,12 +76,12 @@ var showStudents = function(callback) {
 var findStudent = function(phone, callback) {
   MongoClient.connect(url, function(err, db) {
     if (err) {
-      console.log("Mongo connect error");
+      //console.log("Mongo connect error");
     }
     var cursor = db.collection('studentInfo').find({"phone": phone});
     cursor.nextObject(function(err, item) {
       if (item != null) {
-        console.log(item["name"]);
+        //console.log(item["name"]);
         db.close();
       }
     });
@@ -88,7 +92,7 @@ var findStudent = function(phone, callback) {
 var clearScore = function(callback) {
   MongoClient.connect(url, function(err, db) {
     if (err) {
-      console.log("Mongo connect error");
+      //console.log("Mongo connect error");
     }
     db.collection('studentInfo').update(
       {},
@@ -104,7 +108,7 @@ var clearScore = function(callback) {
 var updateScore = function(phone, score, callback) {
   MongoClient.connect(url, function(err, db) {
     if (err) {
-      console.log("Mongo connect error");
+      //console.log("Mongo connect error");
     }
     db.collection('studentInfo').updateOne(
       {"phone": phone},
@@ -119,22 +123,26 @@ var updateScore = function(phone, score, callback) {
 var exportResults = function(callback) {
   MongoClient.connect(url, function(err, db) {
     if (err) {
-      console.log("Mongo connect error");
+      //console.log("Mongo connect error");
     }
     var cursor = db.collection('studentInfo').find();
     var outputStream = "";
     cursor.each(function(err, doc) {
       if (err) {
-        console.log("Mongo find error");
+        //console.log("Mongo find error");
       }
       if (doc != null) {
-        outputStream += doc["name"] + ',' + doc["score"].toString() + '\n';
+        var scoreString = "";
+        if (doc["score"]) {
+          scoreString = doc["score"].toString();
+        }
+        outputStream += doc["name"] + ',' + scoreString + '\n';
       } else {
         fs.writeFile(outputFileName, outputStream, function(err) {
           if(err) {
-            return console.log(err);
+            //console.log(err);
           }
-          console.log("The file was saved!");
+          //console.log("The file was saved!");
         });
         db.close();
       }
@@ -142,10 +150,19 @@ var exportResults = function(callback) {
   });
 };
 
+var test = function() {
+  for (var i = 0; i < 5; i++) {
+    findStudent("110");
+    updateScore("110", 2);
+    console.log("loop");
+  }
+}
+
 //functions to call
-//initialDB();
+initialDB();
 clearScore();
 findStudent("110");
 updateScore("110", 2);
 showStudents();
 exportResults();
+test();
