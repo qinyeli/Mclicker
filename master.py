@@ -3,7 +3,7 @@ from random import randint
 from random import seed
 from time import clock
 from time import sleep
-from flask import Flask,render_template, request,json
+from flask import Flask,render_template, request,json, send_file
 import json
 import csv
 import os
@@ -38,12 +38,12 @@ class master:
 		self.token = tkn
 		self.number = nmb
 		self.client = TwilioRestClient(self.account, self.token)
+		for message in self.client.messages.list():
+			self.client.messages.delete(message.sid)
 		self.grades = {}
 
 #generate a random authentication code
 	def generateAuthCode(self, mySeed=0):
-		for message in self.client.messages.list():
-			self.client.messages.delete(message.sid)
 		seed()	
 		num = randint(100000, 999999)
 		self.auth = str(num)
@@ -57,6 +57,7 @@ class master:
 				self.presentStudent[str(message.from_)] = 1
 				self.client.messages.delete(message.sid)
 		print self.presentStudent
+		return json.dumps(0)
 
 #refresh submission number
 	def countSubmission(self):
@@ -82,6 +83,9 @@ class master:
 			for student in self.presentStudent.items():
 				self.grades[student[0]] = "present but no answer"
 				writer.writerow({"student": student[0], "answer": "present but no answer"})
+		return json.dumps(self.grades)
+	
+	def getGradeStats(self):
 		countAnswer = {}
 		for answer in self.grades.items():
 			if answer[1] in countAnswer:
@@ -89,9 +93,6 @@ class master:
 			else:
 				countAnswer[answer[1]] = 1
 		return json.dumps(countAnswer)
-	
-	def getGradeStats(self):
-		return json.dumps(self.grades)
 
 m = master()
 
@@ -105,7 +106,7 @@ def generate():
 
 @app.route('/check', methods=['POST']) #20 seconds later call this
 def check():
-	m.checkAuth()
+	return m.checkAuth()
 
 @app.route('/count', methods=['POST']) #Number of submission
 def count():
@@ -119,6 +120,13 @@ def stop():
 def stat():
 	return m.getGradeStats()
 
+@app.route('/graph', methods=['POST'])
+def graph():
+	return render_template('graph.html')
+
+@app.route('/img/sunset.jpg', methods=['GET'])
+def get_image_sunset():
+	return send_file('img/sunset.jpg')
 
 if __name__ == "__main__":
 	app.run()
