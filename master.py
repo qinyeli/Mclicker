@@ -129,7 +129,7 @@ def get_image_sunset():
 	return send_file('img/sunset.jpg')
 
 if __name__ == "__main__":
-	app.run()
+	app.run(threaded=True)
 
 #for test
 #client = master()
