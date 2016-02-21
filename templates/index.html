@@ -85,7 +85,7 @@
 		 				{
 		 					this.setState({time: current_time});
 		 				}
-						else if (!checked)
+						else if (!this.state.checked)
 						{
 							$.ajax({
 								url: '/check',
@@ -96,7 +96,7 @@
 									console.log(error);
 								}
 							});
-							checked=true;
+							this.setState({checked: true});
 						}
 		 			},
 		 			handleClick: function(){
@@ -140,7 +140,7 @@
 							url: '/stop',
 							type: 'POST',
 							success: function(response){
-								//Handle this !
+								console.log(response);
 							},
 							error: function(error){
 								console.log(error);
