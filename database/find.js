@@ -3,6 +3,9 @@ var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/MClicker_db';
 
+var fs = require("fs");
+var fileName = "output.csv";
+
 //show all student information
 var showStudents = function(db, callback) {
   var cursor = db.collection('studentInfo').find();
@@ -29,7 +32,8 @@ var findStudent = function(db, phone, callback) {
 var clearScore = function(db, callback) {
   db.collection('studentInfo').update(
     {},
-    {$set:{"score": []}},
+    {$set: {"score": []}},
+    {multi: true},
     function(err, results) {
       callback();
   });
@@ -45,13 +49,33 @@ var updateScore = function(db, phone, score, callback) {
   });
 };
 
+var exportResults = function(db, callback) {
+  var cursor = db.collection('studentInfo').find();
+  var outputStream = "";
+  cursor.each(function(err, doc) {
+    assert.equal(err, null);
+    if (doc != null) {
+      outputStream += doc["name"] + ',' + doc["score"].toString() + '\n';
+    } else {
+      fs.writeFile(fileName, outputStream, function(err) {
+        if(err) {
+          return console.log(err);
+        }
+        console.log("The file was saved!");
+      });
+      callback();
+    }
+  });
+}
+
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   clearScore(db, function(d){});
   findStudent(db, "7348461740", function(d){
     console.log(d);
   });
-  updateScore(db, "110", 2, function(){});
+  updateScore(db, "110", 1, function(){});
+  exportResults(db, function(){});
   showStudents(db, function() {
     db.close();
   });
