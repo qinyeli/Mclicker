@@ -75,29 +75,32 @@
 
 		 		var Timer = React.createClass({
 		 			getInitialState: function(){
-		 				return {time: 20, pushed: false, recaptcha: ""};
+		 				return {time: 20, pushed: false, recaptcha: "", checked: false};
 		 			},
 		 			timeDecrease: function(){
 		 				var current_time = this.state.time-1;
-		 				//console.log(current_time);
-		 				if (current_time!=-1)
+		 				if (current_time>-1)
 		 				{
+		 					this.setState({time: current_time});
+		 				}
+						else if (!checked)
+						{
 							$.ajax({
 								url: '/check',
 								type: 'POST',
 								success: function(response){
-									console.log(typeof response);
 								},
 								error: function(error){
 									console.log(error);
 								}
 							});
-		 					this.setState({time: current_time});
-		 				}
+							checked=true;
+						}
 		 			},
 		 			handleClick: function(){
 		 				if (!this.state.pushed)
 		 				{
+		 					console.log("Handleclick");
 		 					var mythis=this;
 							$.ajax({
 								url: '/generate',
@@ -127,14 +130,60 @@
 		 		});
 
 		 		var Stop = React.createClass({
+		 			handleClick: function () {
+						$.ajax({
+							url: '/stop',
+							type: 'POST',
+							success: function(response){
+								//Handle this !
+							},
+							error: function(error){
+								console.log(error);
+							}
+						});
+						$.ajax({
+							url: '/gragh',
+							type: 'POST',
+							success: function(){
+							},
+							error: function(error){
+								console.log(error);
+							}
+						});								 				 
+		 			},
 		 			render: function(){
 		 				return (
-		 					<form action="graph.html">
-		 					<button type="submit" className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Time is Up!</button>
-		 					</form>
+		 					<button onClick={this.handleClick} className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Time is Up!</button>
 		 				)
 		 			}
 		 		})                                              
+
+		 		var Submitted = React.createClass({
+		 			getInitialState: function(){
+		 				return ({number: 0});
+		 			},
+		 			getNum: function(){
+		 				var mythis = this;
+						$.ajax({
+							url: '/count',
+							type: 'POST',
+							success: function(response){
+								mythis.setState({number: response});
+							},
+							error: function(error){
+								console.log(error);
+							}
+						});
+		 			},
+		 			componentDidMount: function(){
+		 				setInterval(this.getNum, 2000);
+		 			},
+		 			render: function(){
+		 				return (
+		 					<p className="submitted">{this.state.number}</p>
+		 				);
+		 			}
+		 		})
 
 				var Wrapper = React.createClass({
 					render: function(){
@@ -142,6 +191,7 @@
 							<div>
 								<ProblemList problems={problems}/>
 								<Timer/>
+								<Submitted/>
 								<Stop/>
 							</div>
 						)
@@ -157,8 +207,5 @@
 </html>
 
 <style>
-body {
-	background: url('../img/sunset.jpg') center / cover;
-}
 
 </style>

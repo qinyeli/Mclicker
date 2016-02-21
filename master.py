@@ -114,7 +114,7 @@ def count():
 
 @app.route('/stop',methods=['POST']) #Call when Stop. Note to console.log
 def stop():
-	return m.getAnswer()
+	return m.getAnswerCount()
 
 @app.route('/stat', methods=['POST'])
 def stat():
@@ -129,7 +129,7 @@ def get_image_sunset():
 	return send_file('img/sunset.jpg')
 
 if __name__ == "__main__":
-	app.run()
+	app.run(threaded=True)
 
 #for test
 #client = master()
