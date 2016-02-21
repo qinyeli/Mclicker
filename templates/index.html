@@ -79,9 +79,12 @@
 		 			},
 		 			timeDecrease: function(){
 		 				var current_time = this.state.time-1;
-		 				//console.log(current_time);
-		 				if (current_time!=-1)
+		 				if (current_time>-1)
 		 				{
+		 					this.setState({time: current_time});
+		 				}
+						else if (current_time==-1)
+						{
 							$.ajax({
 								url: '/check',
 								type: 'POST',
@@ -91,8 +94,7 @@
 									console.log(error);
 								}
 							});
-		 					this.setState({time: current_time});
-		 				}
+						}
 		 			},
 		 			handleClick: function(){
 		 				if (!this.state.pushed)
@@ -165,7 +167,6 @@
 							url: '/count',
 							type: 'POST',
 							success: function(response){
-								console.log(response);
 								mythis.setState({number: response});
 							},
 							error: function(error){

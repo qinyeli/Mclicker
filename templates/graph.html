@@ -7,12 +7,17 @@
 	<body>
 		 <div id="chart_div"></div>
 		<script>
-			var statistic = [
-						  ['A', 3],
-							['B', 4],
-							['C', 5],
-							['D', 7]
-						];
+			$.ajax({
+				url: '/stat',
+				type: 'POST',
+				success: function(response){
+					console.log(typeof response);
+					console.log(response);
+				},
+				error: function(error){
+					console.log(error);
+				}
+			});
 
 			google.charts.load('current', {packages: ['corechart', 'bar']});
 			google.charts.setOnLoadCallback(draw);
