@@ -97,19 +97,19 @@ def start():
 	
 @app.route('/generate',methods=['POST'])
 def generate():
-	m.generateAuthCode() 
+	return m.generateAuthCode() 
 
-@app.route('/check')
+@app.route('/check', methods=['POST'])
 def check():
 	m.checkAuth()
 
-@app.route('/count')
+@app.route('/count', methods=['POST'])
 def count():
-	m.countSubmission()
+	return m.countSubmission()
 
-@app.route('/stop')
+@app.route('/stop',methods=['POST'])
 def stop():
-	m.getAnswer()
+	return m.getAnswer()
 
 
 if __name__ == "__main__":
