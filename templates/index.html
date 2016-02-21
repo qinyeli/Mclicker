@@ -10,6 +10,7 @@
 		<script defer src="https://code.getmdl.io/1.1.1/material.min.js"></script>
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/eldarion-ajax/0.12.0/eldarion-ajax.min.js"></script>
 	</head>
 	<body>
 		<div id="content"></div>
@@ -29,25 +30,35 @@
 		 				//console.log(current_time);
 		 				if (current_time!=-1)
 		 				{
+							$.ajax({
+								url: '/check',
+								type: 'POST',
+								success: function(response){
+									console.log(typeof response);
+								},
+								error: function(error){
+									console.log(error);
+								}
+							});
 		 					this.setState({time: current_time});
 		 				}
 		 			},
 		 			handleClick: function(){
-								$.ajax({
-									url: '/generate',
-									type: 'POST',
-									success: function(response){
-										console.log("Success!");
-										this.setState({recaptcha: response});
-									},
-									error: function(error){
-										console.log(error);
-									}
-								});
-		 				//console.log("Handling click");
-		 				//this.setState({recaptcha: "Yanz zhen ma"})
 		 				if (!this.state.pushed)
 		 				{
+		 					var mythis=this;
+							$.ajax({
+								url: '/generate',
+								type: 'POST',
+								success: function(response){
+									mythis.setState({recaptcha: response});
+								},
+								error: function(error){
+									console.log(error);
+								}
+							});
+		 				//console.log("Handling click");
+		 				//this.setState({recaptcha: "Yanz zhen ma"})
 		 					this.setState({pushed: true});
 		 					setInterval(this.timeDecrease,1000);
 		 				}
@@ -67,7 +78,7 @@
 		 			render: function(){
 		 				return (
 		 					<form action="graph.html">
-		 					<button type="submit" className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Stop</button>
+		 					<button type="submit" className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Time is Up!</button>
 		 					</form>
 		 				)
 		 			}
