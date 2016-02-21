@@ -65,7 +65,7 @@ class master:
 		return json.dumps(len(self.grades))
 
 #fetch all answers and write to a csv file called grades.csv
-	def getAnswer(self):
+	def getAnswerCount(self):
 		self.countSubmission()
 		with open('grades.csv', 'w') as csvfile:
 			fieldnames = ["student", "answer"]
@@ -88,6 +88,9 @@ class master:
 			else:
 				countAnswer[answer[1]] = 1
 		return json.dumps(countAnswer)
+	
+	def getGradeStats(self):
+		return json.dumps(self.grades)
 
 m = master()
 
@@ -110,6 +113,10 @@ def count():
 @app.route('/stop',methods=['POST'])
 def stop():
 	return m.getAnswer()
+
+@app.route('/stat', methods=['POST'])
+def stat():
+	return m.getGradeStats()
 
 
 if __name__ == "__main__":
