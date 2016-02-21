@@ -12,9 +12,12 @@
 		<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/eldarion-ajax/0.12.0/eldarion-ajax.min.js"></script>
 		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	</head>
 	<body>
 		<div id="content"></div>
+		<div id="chart_div"></div>
+		<button id="draw" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Draw</button>
 		 	<script type="text/babel">
 		 		var socket = io('http://127.0.0.1:3000');
 
@@ -208,10 +211,36 @@
 					<Wrapper className="wrap"/>,
 					document.getElementById('content')
 				);
+
+				var statistic = [
+					['A', 3],
+					['B', 4],
+					['C', 5],
+					['D', 7]
+				];
+
+				document.getElementById("draw").onclick=function drawWrapper(){
+					google.charts.load('current', {packages: ['corechart', 'bar']});
+					google.charts.setOnLoadCallback(draw);
+
+					function draw() {
+						var data = new google.visualization.DataTable();
+						data.addColumn('string', 'Answer');
+						data.addColumn('number', 'Student Number');
+
+						data.addRows(statistic);
+
+						var options = {
+							title: 'Statistic of Your Answer',
+							width: 5,
+			        		height: 10
+						};
+
+						var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+						chart.draw(data, null);
+					}
+				}
+
 			</script>
 	</body>
 </html>
-
-<style>
-
-</style>
