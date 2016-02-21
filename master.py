@@ -3,9 +3,10 @@ from random import randint
 from random import seed
 from time import clock
 from time import sleep
-from flask import Flask
+from flask import Flask,render_template, request,json
 import json
 import csv
+import os
 
 
 __doc__ = """
@@ -20,6 +21,10 @@ countSubmission() ------ called as refresh, return the number of submissions
 getAnswer() ------ called at the end of the quiz, fetch all answers and write grades to a csv file named grades.csv, return a map from student phone number to answer, students submitted authentication code but no answer get "present but no answer", students haven't submitted authentication code but submitted an answer get "invalid answer"
 
 """
+
+
+app = Flask(__name__)
+
 
 class master:
 #trial account
@@ -41,7 +46,7 @@ class master:
 			self.client.messages.delete(message.sid)
 		seed()	
 		self.auth = str(randint(100000, 999999))
-		return self.auth
+		return json.dumps(self.auth)
 
 #when front-end finish twenty seconds count, this will be called, and collect all students who submitted the correct authentication code
 	def checkAuth(self):
@@ -57,7 +62,7 @@ class master:
 		for message in self.client.messages.list(to = self.number):
 			self.grades[str(message.from_)] = message.body
 			self.client.messages.delete(message.sid)
-		return len(self.grades)
+		return json.dumps(len(self.grades))
 
 #fetch all answers and write to a csv file called grades.csv
 	def getAnswer(self):
@@ -83,6 +88,32 @@ class master:
 			else:
 				countAnswer[answer[1]] = 1
 		return json.dumps(countAnswer)
+
+m = master()
+
+@app.route('/')
+def start():
+	return render_template('index.html')
+	
+@app.route('/generate')
+def generate():
+	m.generateAuthCode() 
+
+@app.route('/check')
+def check():
+	m.checkAuth()
+
+@app.route('/count')
+def count():
+	m.countSubmission()
+
+@app.route('/stop')
+def stop():
+	m.getAnswer()
+
+
+if __name__ == "__main__":
+	app.run()
 
 #for test
 #client = master()
