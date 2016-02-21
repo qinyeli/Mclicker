@@ -8,6 +8,8 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
 		<script defer src="https://code.getmdl.io/1.1.1/material.min.js"></script>
+		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+		<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 	</head>
 	<body>
 		<div id="content"></div>
@@ -31,8 +33,19 @@
 		 				}
 		 			},
 		 			handleClick: function(){
+								$.ajax({
+									url: '/generate',
+									type: 'POST',
+									success: function(response){
+										console.log("Success!");
+										this.setState({recaptcha: response});
+									},
+									error: function(error){
+										console.log(error);
+									}
+								});
 		 				//console.log("Handling click");
-		 				this.setState({recaptcha: "Yanz zhen ma"})
+		 				//this.setState({recaptcha: "Yanz zhen ma"})
 		 				if (!this.state.pushed)
 		 				{
 		 					this.setState({pushed: true});

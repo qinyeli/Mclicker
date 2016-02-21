@@ -95,7 +95,7 @@ m = master()
 def start():
 	return render_template('index.html')
 	
-@app.route('/generate')
+@app.route('/generate',methods=['POST'])
 def generate():
 	m.generateAuthCode() 
 
