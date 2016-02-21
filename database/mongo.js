@@ -158,6 +158,7 @@ io.sockets.on('connect', function(socket) {
   console.log("server connected");
 
   socket.on('update', function(data) {
+    console.log('update');
     updateScore(data);
   });
   
