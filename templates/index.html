@@ -17,218 +17,224 @@
 		<div id="content"></div>
 		<div id="chart_div"></div>
 		<button id="draw" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Draw</button>
-	 	<script type="text/babel">
+		 	<script type="text/babel">
 
-			var problems = [
-				{
-					"question": "What algorithm does Travalling Salesman Problem use?",
-					"A": "A. Divide and Conquer",
-					"B": "B. Backtracking",
-					"C": "C. Brute Force",
-					"D": "D. Branch and Bound"
-				},
-				{
-					"question": "Which of the following is not a synchronization variable?",
-					"A": "A. mutex",
-					"B": "B. thread",
-					"C": "C. cv",
-					"D": "D. semephore"
-				},
-				{
-					"question": "Which of the following does not vary as the angle of attach increases? (Assuming thin airfoil theorem applies)",
-					"A": "A. Aerodynamic center",
-					"B": "B. Center of pressure",
-					"C": "C. Coefficient of lift",
-					"D": "D. Coefficient of drag"
-				}
-			];
-
-			var Problem = React.createClass({
-				render: function() {
-					return (
-						<div>
-							<h2>{this.props.question}</h2>
-							<h3>{this.props.A}</h3>
-							<h3>{this.props.B}</h3>
-							<h3>{this.props.C}</h3>
-							<h3>{this.props.D}</h3>
-						</div>
-					);
-				}
-			});
-
-			var ProblemList = React.createClass({
-				render: function() {
-					var problemNodes = this.props.problems.map(function(problem) {
-							return <Problem question={problem.question} A={problem.A} B={problem.B} C={problem.C} D={problem.D}/>
-					});
-					return (
-						<div>
-							{problemNodes}
-						</div>
-					);
-				}
-			});
-
-	 		var Clock = React.createClass({
-	 			render: function(){
-	 				return (<h3>{this.props.time}</h3>);
-	 			}
-	 		});
-
-	 		var Timer = React.createClass({
-	 			getInitialState: function(){
-	 				return {time: 20, pushed: false, recaptcha: "", checked: false};
-	 			},
-	 			timeDecrease: function(){
-	 				var current_time = this.state.time-1;
-	 				if (current_time>-1)
-	 				{
-	 					this.setState({time: current_time});
-	 				}
-					else if (!checked)
+				var problems = [
 					{
-						$.ajax({
-							url: '/check',
-							type: 'POST',
-							success: function(response){
-							},
-							error: function(error){
-								console.log(error);
-							}
-						});
-						checked=true;
+						"question": "What algorithm does Travalling Salesman Problem use?",
+						"A": "A. Divide and Conquer",
+						"B": "B. Backtracking",
+						"C": "C. Brute Force",
+						"D": "D. Branch and Bound"
+					},
+					{
+						"question": "Which of the following is not a synchronization variable?",
+						"A": "A. mutex",
+						"B": "B. thread",
+						"C": "C. cv",
+						"D": "D. semephore"
+					},
+					{
+						"question": "Which of the following does not vary as the angle of attach increases? (Assuming thin airfoil theorem applies)",
+						"A": "A. Aerodynamic center",
+						"B": "B. Center of pressure",
+						"C": "C. Coefficient of lift",
+						"D": "D. Coefficient of drag"
 					}
-	 			},
-	 			handleClick: function(){
-	 				if (!this.state.pushed)
-	 				{
-	 					console.log("Handleclick");
-	 					var mythis=this;
+				];
+
+				var Problem = React.createClass({
+					render: function() {
+						return (
+							<div>
+								<h2>{this.props.question}</h2>
+								<h3>{this.props.A}</h3>
+								<h3>{this.props.B}</h3>
+								<h3>{this.props.C}</h3>
+								<h3>{this.props.D}</h3>
+							</div>
+						);
+					}
+				});
+
+				var ProblemList = React.createClass({
+					render: function() {
+						var problemNodes = this.props.problems.map(function(problem) {
+								return <Problem question={problem.question} A={problem.A} B={problem.B} C={problem.C} D={problem.D}/>
+						});
+						return (
+							<div>
+								{problemNodes}
+							</div>
+						);
+					}
+				});
+
+		 		var Clock = React.createClass({
+		 			render: function(){
+		 				return (<h3>{this.props.time}</h3>);
+		 			}
+		 		});
+
+		 		var Timer = React.createClass({
+		 			getInitialState: function(){
+		 				return {time: 20, pushed: false, recaptcha: "", checked: false};
+		 			},
+		 			timeDecrease: function(){
+		 				var current_time = this.state.time-1;
+		 				if (current_time>-1)
+		 				{
+		 					this.setState({time: current_time});
+		 				}
+						else if (!this.state.checked)
+						{
+							$.ajax({
+								url: '/check',
+								type: 'POST',
+								success: function(response){
+								},
+								error: function(error){
+									console.log(error);
+								}
+							});
+							this.setState({checked: true});
+						}
+		 			},
+		 			handleClick: function(){
+		 				if (!this.state.pushed)
+		 				{
+		 					console.log("Handleclick");
+		 					var mythis=this;
+							$.ajax({
+								url: '/generate',
+								type: 'POST',
+								success: function(response){
+									mythis.setState({recaptcha: response});
+								},
+								error: function(error){
+									console.log(error);
+								}
+							});
+		 				//console.log("Handling click");
+		 				//this.setState({recaptcha: "Yanz zhen ma"})
+		 					this.setState({pushed: true});
+		 					setInterval(this.timeDecrease,1000);
+		 				}
+		 			},
+		 			render: function(){
+		 				return(
+		 					<div>
+		 						<h3>{this.state.recaptcha}</h3>
+			 					<button onClick={this.handleClick} className="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Start</button>
+			 					<Clock time={this.state.time}/>
+			 				</div>
+		 				);
+		 			}
+		 		});
+
+		 		var Stop = React.createClass({
+		 			handleClick: function () {
 						$.ajax({
-							url: '/generate',
+							url: '/stop',
 							type: 'POST',
 							success: function(response){
-								mythis.setState({recaptcha: response});
+								//Handle this !
 							},
 							error: function(error){
 								console.log(error);
 							}
 						});
-	 				//console.log("Handling click");
-	 				//this.setState({recaptcha: "Yanz zhen ma"})
-	 					this.setState({pushed: true});
-	 					setInterval(this.timeDecrease,1000);
-	 				}
-	 			},
-	 			render: function(){
-	 				return(
-	 					<div>
-	 						<h3>{this.state.recaptcha}</h3>
-		 					<button onClick={this.handleClick} className="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Start</button>
-		 					<Clock time={this.state.time}/>
-		 				</div>
-	 				);
-	 			}
-	 		});
+						$.ajax({
+							url: '/graph',
+							type: 'POST',
+							success: function(){
+							},
+							error: function(error){
+								console.log(error);
+							}
+						});								 				 
+		 			},
+		 			render: function(){
+		 				return (
+		 					<button onClick={this.handleClick} className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Time is Up!</button>
+		 				)
+		 			}
+		 		})                                              
 
-	 		var Stop = React.createClass({
-	 			handleClick: function () {
-					$.ajax({
-						url: '/stop',
-						type: 'POST',
-						success: function(response){
-							//Handle this !
-						},
-						error: function(error){
-							console.log(error);
-						}
-					});							 				 
-	 			},
-	 			render: function(){
-	 				return (
-	 					<button onClick={this.handleClick} className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Time is Up!</button>
-	 				)
-	 			}
-	 		})                                              
+		 		var Submitted = React.createClass({
+		 			getInitialState: function(){
+		 				return ({number: 0});
+		 			},
+		 			getNum: function(){
+		 				var mythis = this;
+						$.ajax({
+							url: '/count',
+							type: 'POST',
+							success: function(response){
+								mythis.setState({number: response});
+							},
+							error: function(error){
+								console.log(error);
+							}
+						});
+		 			},
+		 			componentDidMount: function(){
+		 				setInterval(this.getNum, 2000);
+		 			},
+		 			render: function(){
+		 				return (
+		 					<p className="submitted">{this.state.number}</p>
+		 				);
+		 			}
+		 		})
 
-	 		var Submitted = React.createClass({
-	 			getInitialState: function(){
-	 				return ({number: 0});
-	 			},
-	 			getNum: function(){
-	 				var mythis = this;
-					$.ajax({
-						url: '/count',
-						type: 'POST',
-						success: function(response){
-							mythis.setState({number: response});
-						},
-						error: function(error){
-							console.log(error);
-						}
-					});
-	 			},
-	 			componentDidMount: function(){
-	 				setInterval(this.getNum, 2000);
-	 			},
-	 			render: function(){
-	 				return (
-	 					<p className="submitted">{this.state.number}</p>
-	 				);
-	 			}
-	 		})
+				var Wrapper = React.createClass({
+					render: function(){
+						return (
+							<div>
+								<ProblemList problems={problems}/>
+								<Timer/>
+								<Submitted/>
+								<Stop/>
+							</div>
+						)
+					}
+				});
 
-			var Wrapper = React.createClass({
-				render: function(){
-					return (
-						<div>
-							<ProblemList problems={problems}/>
-							<Timer/>
-							<Submitted/>
-							<Stop/>
-						</div>
-					)
+				ReactDOM.render(
+					<Wrapper className="wrap"/>,
+					document.getElementById('content')
+				);
+
+				var statistic = [
+					['A', 3],
+					['B', 4],
+					['C', 5],
+					['D', 7]
+				];
+
+				document.getElementById("draw").onclick=function drawWrapper(){
+					google.charts.load('current', {packages: ['corechart', 'bar']});
+					google.charts.setOnLoadCallback(draw);
+
+					function draw() {
+						var data = new google.visualization.DataTable();
+						data.addColumn('string', 'Answer');
+						data.addColumn('number', 'Student Number');
+
+						data.addRows(statistic);
+
+						var options = {
+							title: 'Statistic of Your Answer',
+							width: 5,
+			        		height: 10
+						};
+
+						var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+						chart.draw(data, null);
+					}
 				}
-			});
 
-			ReactDOM.render(
-				<Wrapper className="wrap"/>,
-				document.getElementById('content')
-			);
-
-			var statistic = [
-				['A', 3],
-				['B', 4],
-				['C', 5],
-				['D', 7]
-			];
-
-			document.getElementById("draw").onclick=function drawWrapper(){
-				google.charts.load('current', {packages: ['corechart', 'bar']});
-				google.charts.setOnLoadCallback(draw);
-
-				function draw() {
-					var data = new google.visualization.DataTable();
-					data.addColumn('string', 'Answer');
-					data.addColumn('number', 'Student Number');
-
-					data.addRows(statistic);
-
-					var options = {
-						title: 'Statistic of Your Answer',
-						width: 5,
-		        		height: 10
-					};
-
-					var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-					chart.draw(data, null);
-				}
-			}
-		</script>
+			</script>
 	</body>
 </html>
-
-<style>
-
-</style>
