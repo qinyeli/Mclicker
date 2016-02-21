@@ -20,7 +20,7 @@
 
 		 		var Timer = React.createClass({
 		 			getInitialState: function(){
-		 				return {time: 20, pushed: false};
+		 				return {time: 20, pushed: false, recaptcha: ""};
 		 			},
 		 			timeDecrease: function(){
 		 				var current_time = this.state.time-1;
@@ -32,6 +32,7 @@
 		 			},
 		 			handleClick: function(){
 		 				//console.log("Handling click");
+		 				this.setState({recaptcha: "Yanz zhen ma"})
 		 				if (!this.state.pushed)
 		 				{
 		 					this.setState({pushed: true});
@@ -41,6 +42,7 @@
 		 			render: function(){
 		 				return(
 		 					<div>
+		 						<h3>{this.state.recaptcha}</h3>
 			 					<button onClick={this.handleClick} className="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Start</button>
 			 					<Clock time={this.state.time}/>
 			 				</div>
