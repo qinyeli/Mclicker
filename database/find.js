@@ -26,11 +26,20 @@ var findStudent = function(db, phone, callback) {
   });
 }
 
+var clearScore = function(db, callback) {
+  db.collection('studentInfo').update(
+    {},
+    {$set:{"score": []}},
+    function(err, results) {
+      callback();
+  });
+}
+
 //update student name
 var updateScore = function(db, phone, score, callback) {
   db.collection('studentInfo').updateOne(
     {"phone": phone},
-    {$set: {"score": score}},
+    {$push: {"score": score}},
     function(err, results) {
       callback();
   });
@@ -38,6 +47,7 @@ var updateScore = function(db, phone, score, callback) {
 
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
+  clearScore(db, function(d){});
   findStudent(db, "7348461740", function(d){
     console.log(d);
   });
