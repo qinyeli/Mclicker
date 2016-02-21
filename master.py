@@ -45,8 +45,9 @@ class master:
 		for message in self.client.messages.list():
 			self.client.messages.delete(message.sid)
 		seed()	
-		self.auth = str(randint(100000, 999999))
-		return json.dumps(self.auth)
+		num = randint(100000, 999999)
+		self.auth = str(num)
+		return json.dumps(num)
 
 #when front-end finish twenty seconds count, this will be called, and collect all students who submitted the correct authentication code
 	def checkAuth(self):
@@ -99,15 +100,15 @@ def start():
 def generate():
 	return m.generateAuthCode() 
 
-@app.route('/check', methods=['POST'])
+@app.route('/check', methods=['POST']) #20 seconds later call this
 def check():
 	m.checkAuth()
 
-@app.route('/count', methods=['POST'])
+@app.route('/count', methods=['POST']) #Number of submission
 def count():
 	return m.countSubmission()
 
-@app.route('/stop',methods=['POST'])
+@app.route('/stop',methods=['POST']) #Call when Stop. Note to console.log
 def stop():
 	return m.getAnswer()
 
