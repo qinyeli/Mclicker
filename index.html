@@ -20,7 +20,7 @@
 
 		 		var Timer = React.createClass({
 		 			getInitialState: function(){
-		 				return {time: 20};
+		 				return {time: 20, pushed: false};
 		 			},
 		 			timeDecrease: function(){
 		 				var current_time = this.state.time-1;
@@ -32,7 +32,11 @@
 		 			},
 		 			handleClick: function(){
 		 				//console.log("Handling click");
-		 				setInterval(this.timeDecrease,1000);
+		 				if (!this.state.pushed)
+		 				{
+		 					this.setState({pushed: true});
+		 					setInterval(this.timeDecrease,1000);
+		 				}
 		 			},
 		 			render: function(){
 		 				return(
@@ -64,9 +68,16 @@
 				});
 
 				ReactDOM.render(
-					<Wrapper/>,
+					<Wrapper className="big"/>,
 					document.getElementById('content')
 				);
 			</script>
 	</body>
 </html>
+
+<style>
+body {
+	background: url('img/sunset.jpg') center / cover;
+}
+
+</style>
