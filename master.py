@@ -59,12 +59,8 @@ class master:
 		print self.presentStudent
 		return json.dumps(0)
 
-#refresh submission number
 	def countSubmission(self):
-		for message in self.client.messages.list(to = self.number):
-			self.grades[str(message.from_)] = message.body
-			self.client.messages.delete(message.sid)
-		return json.dumps(len(self.grades))
+		return json.dumps(len(self.grades))	
 
 #fetch all answers and write to a csv file called grades.csv
 	def getAnswerCount(self):
@@ -127,6 +123,16 @@ def graph():
 @app.route('/img/sunset.jpg', methods=['GET'])
 def get_image_sunset():
 	return send_file('img/sunset.jpg')
+
+#refresh submission number
+@app.route('/recv_submission', methods = ['POST'])
+def recv_submission():
+	from_ = request.form['From']
+	sid = request.form['Sid']
+	body = request.form['Body']
+	m.grades[from_] = body
+	m.client.messages.delete(message.sid)
+
 
 if __name__ == "__main__":
 	app.run(threaded=True)
