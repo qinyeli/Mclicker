@@ -3,6 +3,8 @@ from random import randint
 from random import seed
 from time import clock
 from time import sleep
+from flask import Flask
+import json
 import csv
 
 
@@ -74,7 +76,13 @@ class master:
 			for student in self.presentStudent.items():
 				self.grades[student[0]] = "present but no answer"
 				writer.writerow({"student": student[0], "answer": "present but no answer"})
-		return self.grades
+		countAnswer = {}
+		for answer in self.grades.items():
+			if answer[1] in countAnswer:
+				countAnswer[answer[1]] += 1
+			else:
+				countAnswer[answer[1]] = 1
+		return json.dumps(countAnswer)
 
 #for test
 #client = master()
