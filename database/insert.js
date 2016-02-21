@@ -11,8 +11,8 @@ var removeall = function(db, callback) {
 
 var insertDocument = function(db, callback) {
   db.collection('studentInfo').insertMany( [
-    {"name" : "shengjie", "phone" : "7348461740", "score" : 0},
-    {"name" : "nobody", "phone" : "110", "score" : 0}
+    {"name" : "shengjie", "phone" : "7348461740", "score" : []},
+    {"name" : "nobody", "phone" : "110", "score" : []}
   ], function(err, result) {
     assert.equal(err, null);
     console.log("Insert succeed.");

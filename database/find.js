@@ -3,6 +3,7 @@ var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/MClicker_db';
 
+//show all student information
 var showStudents = function(db, callback) {
   var cursor = db.collection('studentInfo').find();
   cursor.each(function(err, doc) {
@@ -15,20 +16,30 @@ var showStudents = function(db, callback) {
   });
 };
 
+//input a phone
 var findStudent = function(db, phone, callback) {
   var cursor = db.collection('studentInfo').find({"phone": phone});
   cursor.nextObject(function(err, item) {
     if (item != null) {
-      console.log(item["name"]);
-      return item["name"];
+      callback(item["name"]);
     }
   });
 }
 
+var clearScore = function(db, callback) {
+  db.collection('studentInfo').update(
+    {},
+    {$set:{"score": []}},
+    function(err, results) {
+      callback();
+  });
+}
+
+//update student name
 var updateScore = function(db, phone, score, callback) {
   db.collection('studentInfo').updateOne(
     {"phone": phone},
-    {$set: {"score": score}},
+    {$push: {"score": score}},
     function(err, results) {
       callback();
   });
@@ -36,10 +47,12 @@ var updateScore = function(db, phone, score, callback) {
 
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
-  var studentName = findStudent(db, "7348461740", function(){});
+  clearScore(db, function(d){});
+  findStudent(db, "7348461740", function(d){
+    console.log(d);
+  });
   updateScore(db, "110", 2, function(){});
   showStudents(db, function() {
-      db.close();
+    db.close();
   });
-  console.log("student: " + studentName);
 });

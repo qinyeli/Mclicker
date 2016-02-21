@@ -3,9 +3,10 @@ from random import randint
 from random import seed
 from time import clock
 from time import sleep
-from flask import Flask
+from flask import Flask,render_template, request,json
 import json
 import csv
+import os
 
 
 __doc__ = """
@@ -20,6 +21,10 @@ countSubmission() ------ called as refresh, return the number of submissions
 getAnswer() ------ called at the end of the quiz, fetch all answers and write grades to a csv file named grades.csv, return a map from student phone number to answer, students submitted authentication code but no answer get "present but no answer", students haven't submitted authentication code but submitted an answer get "invalid answer"
 
 """
+
+
+app = Flask(__name__)
+
 
 class master:
 #trial account
@@ -40,8 +45,9 @@ class master:
 		for message in self.client.messages.list():
 			self.client.messages.delete(message.sid)
 		seed()	
-		self.auth = str(randint(100000, 999999))
-		return self.auth
+		num = randint(100000, 999999)
+		self.auth = str(num)
+		return json.dumps(num)
 
 #when front-end finish twenty seconds count, this will be called, and collect all students who submitted the correct authentication code
 	def checkAuth(self):
@@ -57,10 +63,10 @@ class master:
 		for message in self.client.messages.list(to = self.number):
 			self.grades[str(message.from_)] = message.body
 			self.client.messages.delete(message.sid)
-		return len(self.grades)
+		return json.dumps(len(self.grades))
 
 #fetch all answers and write to a csv file called grades.csv
-	def getAnswer(self):
+	def getAnswerCount(self):
 		self.countSubmission()
 		with open('grades.csv', 'w') as csvfile:
 			fieldnames = ["student", "answer"]
@@ -83,6 +89,39 @@ class master:
 			else:
 				countAnswer[answer[1]] = 1
 		return json.dumps(countAnswer)
+	
+	def getGradeStats(self):
+		return json.dumps(self.grades)
+
+m = master()
+
+@app.route('/')
+def start():
+	return render_template('index.html')
+	
+@app.route('/generate',methods=['POST'])
+def generate():
+	return m.generateAuthCode() 
+
+@app.route('/check', methods=['POST']) #20 seconds later call this
+def check():
+	m.checkAuth()
+
+@app.route('/count', methods=['POST']) #Number of submission
+def count():
+	return m.countSubmission()
+
+@app.route('/stop',methods=['POST']) #Call when Stop. Note to console.log
+def stop():
+	return m.getAnswer()
+
+@app.route('/stat', methods=['POST'])
+def stat():
+	return m.getGradeStats()
+
+
+if __name__ == "__main__":
+	app.run()
 
 #for test
 #client = master()
